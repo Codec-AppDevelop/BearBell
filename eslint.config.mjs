@@ -15,7 +15,8 @@ export default defineConfig([
     rules: {
       "react/react-in-jsx-scope": 0,
       "semi": [2, "never"],
-      "comma-dangle": [2, "never"]
+      "comma-dangle": [2, "never"],
+      "no-require-imports": "error"
     }
   }
   // rules ここまで -----------------------
