@@ -4,12 +4,14 @@ import {
   Image, Button, TouchableOpacity
 } from "react-native"
 import { router, useNavigation } from "expo-router"
+import { useAudioPlayer } from "expo-audio"
 
 const settingButtonPressed = (): void => {
   router.push({ pathname: 'bell/setting' })
 }
 
 const Bell = (): JSX.Element => {
+  const audioSource = require('../../../assets/bellSound/sample.mp3')
   const navigation = useNavigation()
 
   useEffect(() => {
@@ -18,10 +20,19 @@ const Bell = (): JSX.Element => {
     })
   }, [])
 
+  const player = useAudioPlayer(audioSource)
+
+  const playSound = () => {
+    if (!player.playing) {
+      player.seekTo(0)
+      player.play()
+    }
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.imageArea}>
-        <TouchableOpacity style={styles.touchableArea}>
+        <TouchableOpacity style={styles.touchableArea} onPress={playSound}>
           <Image
             style={styles.bellImage}
             source={require('../../../assets/bellImage/bell1.png')}
