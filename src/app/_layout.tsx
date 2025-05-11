@@ -1,6 +1,5 @@
 import { JSX } from "react"
 import { Stack, router } from "expo-router"
-import { Button } from "react-native"
 
 const Layout = (): JSX.Element => {
   return <Stack screenOptions={{

@@ -20,13 +20,18 @@ const Bell = (): JSX.Element => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.touchableArea}>
-        <Image
-          style={styles.bellImage}
-          source={require('../../../assets/bellImage/bell1.png')}
-        />
-      </TouchableOpacity>
-      <Text>Hello World!</Text>
+      <View style={styles.imageArea}>
+        <TouchableOpacity style={styles.touchableArea}>
+          <Image
+            style={styles.bellImage}
+            source={require('../../../assets/bellImage/bell1.png')}
+          />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.settingTextArea}>
+        <Text style={styles.settingText_main}>オート再生  ON</Text>
+        <Text style={styles.settingText_sub}>再生間隔  1 min</Text>
+      </View>
     </View>
   )
 }
@@ -34,14 +39,35 @@ const Bell = (): JSX.Element => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
-    alignContent: 'center'
+    backgroundColor: '#eeeeee',
+  },
+  imageArea: {
+    height: '60%',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0)'
   },
   touchableArea: {
-    backgroundColor: "#aaaaaa"
+    backgroundColor: 'rgba(0, 0, 0, 0)',
+    alignItems: 'center'
   },
   bellImage: {
     width: 256
+  },
+  settingTextArea: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '40%'
+  },
+  settingText_main: {
+    color: 'rgba(0, 0, 0, 0.4)',
+    fontSize: 20,
+    lineHeight: 24
+  },
+  settingText_sub: {
+    color: 'rgba(0, 0, 0, 0.4)',
+    fontSize: 12,
+    lineHeight: 16
   }
 })
 
