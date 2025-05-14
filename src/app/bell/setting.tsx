@@ -1,8 +1,27 @@
-import { JSX } from "react"
-import { View, Text, Switch, StyleSheet } from "react-native"
+import { JSX, useEffect, useState } from "react"
+import { View, Text, Switch, Button, StyleSheet } from "react-native"
 import Slider from "@react-native-community/slider"
+import { router, useLocalSearchParams } from "expo-router"
 
-const AAA = (): JSX.Element => {
+interface Props {
+  flg: boolean
+  time: number
+}
+
+const saveButtonPressed = (flg_autoPlay: boolean, timeDuration: number): void => {
+  // router.replace({ pathname: '/bell/bell', params: { flg : flg_autoPlay, time : timeDuration } })
+  router.back()
+  router.setParams({ flg : String(flg_autoPlay), time : String(timeDuration) })
+}
+
+const Setting = (): JSX.Element => {
+  const settingParams = useLocalSearchParams()
+  // console.log(settingParams)
+
+  const [isEnabled, setIsEnabled] = useState(settingParams.flg === "true")
+  const [value, setValue] = useState(Number(settingParams.time))
+  const toggleSwitch = () => setIsEnabled(previousState => !previousState)
+
   return (
     <View style={styles.container}>
       <View style={styles.listItem_switch}>
@@ -11,24 +30,36 @@ const AAA = (): JSX.Element => {
           <Text style={styles.itemSubText}>一定時間ごとの自動再生モード ON/OFF</Text>
         </View>
         <Switch
-          thumbColor = '#00C0C0'
+          thumbColor = {isEnabled ? '#00C0C0' : '#aaaaaa'}
           trackColor = {{true:'#00C0C0'}}
-          value = {false}
+          onValueChange={toggleSwitch}
+          value={isEnabled}
         />
       </View>
 
       <View style={styles.listItem_slide}>
         <View style={styles.listItem_textValue}>
           <Text style={styles.itemMainText}>時間間隔</Text>
-          <Text style={styles.itemValue}>X s</Text>
+          <Text style={styles.itemValue}>{value} s</Text>
         </View>
         <Slider
-          minimumValue = {0}
-          maximumValue = {1}
+          minimumValue = {1}
+          maximumValue = {100}
+          step = {1}
           minimumTrackTintColor = '#00C0C0'
           maximumTrackTintColor = "#000000"
           thumbTintColor = '#00C0C0'
+          value = {value}
+          onValueChange = {setValue}
         />
+      </View>
+
+      <View style={styles.saveButtonArea}>
+        <Button
+            title = 'Save'
+            color = '#00C0C0'
+            onPress = {() => saveButtonPressed(isEnabled, value)}
+          />
       </View>
     </View>
   )
@@ -37,7 +68,8 @@ const AAA = (): JSX.Element => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff'
+    backgroundColor: '#ffffff',
+    alignItems: 'center'
   },
   listItem_switch: {
     paddingVertical: 16,
@@ -45,13 +77,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderBottomWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.15)'
+    borderColor: 'rgba(0, 0, 0, 0.15)',
+    width: '100%'
   },
   listItem_slide: {
     paddingVertical: 16,
     paddingHorizontal: 24,
     borderBottomWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.15)'
+    borderColor: 'rgba(0, 0, 0, 0.15)',
+    width: '100%'
   },
   listItem_subText: {
     justifyContent: 'space-between'
@@ -75,7 +109,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     color: 'rgba(0, 0, 0, 0.4)'
+  },
+  saveButtonArea: {
+    marginVertical: 16,
+    paddingVertical: 32,
+    width: '80%',
+    justifyContent: 'center'
   }
 })
 
-export default AAA
+export default Setting

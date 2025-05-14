@@ -1,32 +1,57 @@
-import { JSX, useEffect } from "react"
+import { JSX, useEffect, useState } from "react"
 import {
   View, Text, StyleSheet,
   Image, Button, TouchableOpacity
 } from "react-native"
-import { router, useNavigation } from "expo-router"
+import { router, useNavigation, useLocalSearchParams } from "expo-router"
 import { useAudioPlayer } from "expo-audio"
 
-const settingButtonPressed = (): void => {
-  router.push({ pathname: 'bell/setting' })
+interface Props {
+  flg?: string
+  time?: string
+}
+
+const settingButtonPressed = (settingParams: Props): void => {
+  router.push({ pathname: 'bell/setting', params: { flg : String(settingParams.flg), time : String(settingParams.time) } })
 }
 
 const Bell = (): JSX.Element => {
   const audioSource = require('../../../assets/bellSound/sample.mp3')
   const navigation = useNavigation()
+  let settingParams = useLocalSearchParams()
+
+  if (Object.keys(settingParams).length === 0) {
+    settingParams = { flg: "false", time: "1" }
+  }
+
+  let flgStr = settingParams.flg === "true" ? "ON" : "OFF"
 
   useEffect(() => {
     navigation.setOptions({
-      headerRight: () => <Button onPress={settingButtonPressed} title='x'/>
+      headerRight: () => <Button onPress={() => {
+        settingButtonPressed(settingParams)
+      }} title='...'/>
     })
-  }, [])
+
+    if (settingParams.flg === "true") {
+      const interval = setInterval(() => {
+          playSound()
+      }, Number(settingParams.time)*1000)
+      return () => clearInterval(interval)
+    } else {
+        stopSound()
+    }
+  }, [settingParams])
 
   const player = useAudioPlayer(audioSource)
 
   const playSound = () => {
-    if (!player.playing) {
-      player.seekTo(0)
-      player.play()
-    }
+    player.seekTo(0)
+    player.play()
+  }
+
+  const stopSound = () => {
+    player.pause()
   }
 
   return (
@@ -40,8 +65,8 @@ const Bell = (): JSX.Element => {
         </TouchableOpacity>
       </View>
       <View style={styles.settingTextArea}>
-        <Text style={styles.settingText_main}>オート再生  ON</Text>
-        <Text style={styles.settingText_sub}>再生間隔  1 min</Text>
+        <Text style={styles.settingText_main}>オート再生  {flgStr}</Text>
+        <Text style={styles.settingText_sub}>再生間隔  {Number(settingParams.time)} sec</Text>
       </View>
     </View>
   )

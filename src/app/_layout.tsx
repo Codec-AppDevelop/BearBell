@@ -1,5 +1,6 @@
 import { JSX } from "react"
-import { Stack, router } from "expo-router"
+import { Stack } from "expo-router"
+import { Button } from "react-native"
 
 const Layout = (): JSX.Element => {
   return <Stack screenOptions={{
@@ -14,6 +15,7 @@ const Layout = (): JSX.Element => {
       fontWeight: 'bold'
     },
     headerTitleAlign: 'center',
+    // headerRight: () => <Button title = "..."></Button>,
   }}
 />
 }
