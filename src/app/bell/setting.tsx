@@ -44,7 +44,7 @@ const Setting = (): JSX.Element => {
         </View>
         <Slider
           minimumValue = {1}
-          maximumValue = {100}
+          maximumValue = {30}
           step = {1}
           minimumTrackTintColor = '#00C0C0'
           maximumTrackTintColor = "#000000"
