@@ -1,10 +1,11 @@
 import { JSX, useCallback } from "react"
 import {
   View, Text, StyleSheet,
-  Image, Button, TouchableOpacity
+  Image, TouchableOpacity
 } from "react-native"
 import { router, useNavigation, useLocalSearchParams, useFocusEffect } from "expo-router"
 import { useAudioPlayer } from "expo-audio"
+import { Ionicons } from "@expo/vector-icons"
 
 interface Props {
   flg?: string
@@ -20,6 +21,13 @@ const Bell = (): JSX.Element => {
   const navigation = useNavigation()
   let settingParams = useLocalSearchParams()
 
+  const player = useAudioPlayer(audioSource)
+
+  const playSound = () => {
+    player.seekTo(0)
+    player.play()
+  }
+
 
   useFocusEffect( useCallback(() => {
 
@@ -30,30 +38,20 @@ const Bell = (): JSX.Element => {
     }, Number(settingParams.time)*1000)
 
     navigation.setOptions({
-      headerRight: () => <Button onPress={() => {
-        settingButtonPressed(settingParams)
-      }} title='...'/>
+      headerRight: () =>
+        <TouchableOpacity
+          onPress={() => {
+            settingButtonPressed(settingParams)
+          }}
+          style={styles.rightButton}
+        >
+          <Ionicons name="settings-sharp" size={20} color="white" />
+        </TouchableOpacity>
     })
 
     return ( () => clearInterval(intervalRef) )
   }, [settingParams]))
 
-  // useEffect(() => {
-
-
-
-  // }, [settingParams])
-
-  const player = useAudioPlayer(audioSource)
-
-  const playSound = () => {
-    player.seekTo(0)
-    player.play()
-  }
-
-  const stopSound = () => {
-    if (!player.playing) { player.pause() }
-  }
 
   return (
     <View style={styles.container}>
@@ -105,6 +103,12 @@ const styles = StyleSheet.create({
     color: 'rgba(0, 0, 0, 0.4)',
     fontSize: 12,
     lineHeight: 16
+  },
+  rightButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 30,
+    height: 30
   }
 })
 
