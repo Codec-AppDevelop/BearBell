@@ -1,7 +1,7 @@
 import { JSX, useEffect, useState } from "react"
 import { View, Text, Switch, Button, StyleSheet } from "react-native"
 import Slider from "@react-native-community/slider"
-import { router, useLocalSearchParams } from "expo-router"
+import { router, useLocalSearchParams, useNavigation } from "expo-router"
 
 interface Props {
   flg: boolean
@@ -21,6 +21,13 @@ const Setting = (): JSX.Element => {
   const [isEnabled, setIsEnabled] = useState(settingParams.flg === "true")
   const [value, setValue] = useState(Number(settingParams.time))
   const toggleSwitch = () => setIsEnabled(previousState => !previousState)
+  const navigation = useNavigation()
+
+  useEffect(()=>{
+    navigation.setOptions({
+      headerTitle: 'Setting'
+    })
+  },[])
 
   return (
     <View style={styles.container}>
