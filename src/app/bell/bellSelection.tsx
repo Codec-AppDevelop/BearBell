@@ -1,10 +1,13 @@
-import { JSX, useState } from "react"
+import { JSX, useEffect, useState } from "react"
 import { View, StyleSheet, TouchableOpacity, Image, Dimensions } from "react-native"
-import Entypo from '@expo/vector-icons/Entypo'
+import { useNavigation } from "expo-router"
 import { useAudioPlayer } from "expo-audio"
-import { Feather } from "@expo/vector-icons"
+import { Feather, Entypo } from "@expo/vector-icons"
+// import Entypo from '@expo/vector-icons/Entypo'
+import BellSelectionItem from "../../components/bellSelectionItem"
 
 const BellSelect = (): JSX.Element => {
+  const navigation = useNavigation()
   const windowWidth = Dimensions.get('window').width
   const windowHeight = Dimensions.get('window').height
   const windowMinLen = Math.min(windowWidth, windowHeight)
@@ -30,11 +33,19 @@ const BellSelect = (): JSX.Element => {
     setSelectNo(No)
   }
 
+  useEffect(()=>{
+    navigation.setOptions({
+      headerTitle: 'Bell Selection'
+    })
+  },[])
+
   return (
     <View style={styles.container}>
       <View style={styles.flexWrap}>
 
-        <View
+        <BellSelectionItem No={1} OnOffFlg={selectNo === 1} onPressFunc={selection}></BellSelectionItem>
+
+        {/* <View
           style={ selectNo === 1 ? [styles.bellContainer, {borderWidth: 3, borderColor: "#00C0C0"}] : styles.bellContainer }>
           <TouchableOpacity
             style={ isPlaying ? [styles.bellTouchArea, {backgroundColor: "white"}] : styles.bellTouchArea}
@@ -71,22 +82,7 @@ const BellSelect = (): JSX.Element => {
               <Entypo name="circle" size={24} color="rgba(0,0,0,0.4)" />
             </View>
           </TouchableOpacity>
-        </View>
-
-        <View style={styles.bellContainer}>
-          <TouchableOpacity style={styles.bellTouchArea}>
-            <Image
-              style={styles.bellImage}
-              source={require('../../../assets/bellImage/bell1.png')}
-            />
-            <TouchableOpacity style={styles.playButtonTouchArea}>
-              <Entypo name="controller-play" size={windowMinLen/2/2} color="rgba(0,0,0,0.4)" />
-            </TouchableOpacity>
-            <View style={styles.checkboxArea}>
-              <Entypo name="circle" size={24} color="rgba(0,0,0,0.4)" />
-            </View>
-          </TouchableOpacity>
-        </View>
+        </View> */}
 
 
       </View>
@@ -94,7 +90,7 @@ const BellSelect = (): JSX.Element => {
   )
 }
 
-let styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
