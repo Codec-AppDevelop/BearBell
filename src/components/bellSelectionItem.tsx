@@ -6,7 +6,7 @@ import { AudioSource, useAudioPlayer } from "expo-audio"
 import assetsPath from "./assetsPath"
 
 interface Props {
-  No: Number,
+  No: number,
   OnOffFlg: boolean,
   onPressFunc: Function
 }
@@ -39,9 +39,11 @@ const BellSelectionItem = (props: Props): JSX.Element => {
         style={ OnOffFlg ? [styles.bellContainer, {borderWidth: 3, borderColor: "#00C0C0"}] : styles.bellContainer }>
         <TouchableOpacity
           style={ isPlaying ? [styles.bellTouchArea, {backgroundColor: "white"}] : styles.bellTouchArea}
-          onPress={() => onPressFunc(No)}>
+          onPress={() => onPressFunc(No)}
+          activeOpacity={1}
+        >
           <Image
-            style={ isPlaying ? [styles.bellImage, {filter: 'grayscale(0%)'}] : styles.bellImage }
+            style={ isPlaying ? [styles.bellImage, {opacity: 1.0}] : styles.bellImage }
             source={assetsPath.image[No]}
           />
           <TouchableOpacity style={styles.playButtonTouchArea} onPress={playSound}>
@@ -91,7 +93,7 @@ const styles = StyleSheet.create({
   bellImage: {
       width: '90%',
       objectFit: 'contain',
-      filter: 'grayscale(70%)'
+      opacity: 0.5
   },
   checkboxArea: {
     position: 'absolute',

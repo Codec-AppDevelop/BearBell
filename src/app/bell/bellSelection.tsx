@@ -12,7 +12,9 @@ const BellSelect = (): JSX.Element => {
   const windowHeight = Dimensions.get('window').height
   const windowMinLen = Math.min(windowWidth, windowHeight)
   const [isPlaying, setIsPlaying] = useState(false)
-  const [selectNo, setSelectNo] = useState(2)
+  const [selectNo, setSelectNo] = useState(0)
+
+  const optionNoList = [...Array(2)].map((_, i) => i)
 
   const audioSource = require('../../../assets/bellSound/sample.mp3')
   const player = useAudioPlayer(audioSource)
@@ -43,47 +45,14 @@ const BellSelect = (): JSX.Element => {
     <View style={styles.container}>
       <View style={styles.flexWrap}>
 
-        <BellSelectionItem No={1} OnOffFlg={selectNo === 1} onPressFunc={selection}></BellSelectionItem>
-
-        {/* <View
-          style={ selectNo === 1 ? [styles.bellContainer, {borderWidth: 3, borderColor: "#00C0C0"}] : styles.bellContainer }>
-          <TouchableOpacity
-            style={ isPlaying ? [styles.bellTouchArea, {backgroundColor: "white"}] : styles.bellTouchArea}
-            onPress={() => selection(1)}>
-            <Image
-              style={ isPlaying ? [styles.bellImage, {filter: 'grayscale(0%)'}] : styles.bellImage }
-              source={require('../../../assets/bellImage/bell1.png')}
-            />
-            <TouchableOpacity style={styles.playButtonTouchArea} onPress={playSound}>
-              <Entypo name="controller-play"
-                size={windowMinLen/2/2}
-                color={ isPlaying ? 'rgba(0,0,0,0.0)' : 'rgba(0,0,0,0.4)' }
-              />
-            </TouchableOpacity>
-            <View style={styles.checkboxArea}>
-              <Feather
-                name={selectNo === 1 ? "check-circle" : "circle"}
-                size={24}
-                color={selectNo === 1 ? "#00C0C0" : "rgba(0,0,0,0.4)"} />
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.bellContainer}>
-          <TouchableOpacity style={styles.bellTouchArea}>
-            <Image
-              style={styles.bellImage}
-              source={require('../../../assets/bellImage/bell1.png')}
-            />
-            <TouchableOpacity style={styles.playButtonTouchArea}>
-              <Entypo name="controller-play" size={windowMinLen/2/2} color="rgba(0,0,0,0.4)" />
-            </TouchableOpacity>
-            <View style={styles.checkboxArea}>
-              <Entypo name="circle" size={24} color="rgba(0,0,0,0.4)" />
-            </View>
-          </TouchableOpacity>
-        </View> */}
-
+        {optionNoList.map((_, i) => (
+          <BellSelectionItem
+            No={i}
+            OnOffFlg={selectNo === i}
+            onPressFunc={selection}
+            key={i}
+          ></BellSelectionItem>
+        ))}
 
       </View>
     </View>
