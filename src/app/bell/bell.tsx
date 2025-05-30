@@ -7,27 +7,33 @@ import { router, useNavigation, useLocalSearchParams, useFocusEffect } from "exp
 import { useAudioPlayer } from "expo-audio"
 import { Ionicons } from "@expo/vector-icons"
 
+import assetsPath from "../../components/assetsPath"
+
 interface Props {
   flg?: string
   time?: string
+  no?: string
 }
 
 const settingButtonPressed = (settingParams: Props): void => {
-  router.push({ pathname: 'bell/setting', params: { flg : String(settingParams.flg), time : String(settingParams.time) } })
+  router.push({ pathname: 'bell/setting', params: { flg : String(settingParams.flg), time : String(settingParams.time) , no : String(settingParams.no)} })
 }
 
 const Bell = (): JSX.Element => {
-  const audioSource = require('../../../assets/bellSound/sample.mp3')
   const navigation = useNavigation()
   let settingParams = useLocalSearchParams()
 
+  if (Object.keys(settingParams).length === 0) {
+    settingParams = { flg : String(false), time : String(5), no : String(0) }
+  }
+
+  const audioSource = assetsPath.audio[Number(settingParams.no)]
   const player = useAudioPlayer(audioSource)
 
   const playSound = () => {
     player.seekTo(0)
     player.play()
   }
-
 
   useFocusEffect( useCallback(() => {
 
@@ -59,7 +65,7 @@ const Bell = (): JSX.Element => {
         <TouchableOpacity style={styles.touchableArea} onPress={playSound}>
           <Image
             style={styles.bellImage}
-            source={require('../../../assets/bellImage/bell1.png')}
+            source={assetsPath.image[Number(settingParams.no)]}
           />
         </TouchableOpacity>
       </View>

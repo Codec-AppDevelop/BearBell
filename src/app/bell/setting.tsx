@@ -1,22 +1,23 @@
 import { JSX, useEffect, useState } from "react"
-import { View, Text, Switch, Button, StyleSheet } from "react-native"
+import { View, Text, Switch, Button, Image, TouchableOpacity, StyleSheet } from "react-native"
 import Slider from "@react-native-community/slider"
 import { router, useLocalSearchParams, useNavigation } from "expo-router"
 
-interface Props {
-  flg: boolean
-  time: number
+import assetsPath from "../../components/assetsPath"
+import { Feather } from "@expo/vector-icons"
+
+const checkButtonPressed = (flg_autoPlay: boolean, timeDuration: number, bellNo: number): void => {
+  router.back()
+  router.setParams({ flg : String(flg_autoPlay), time : String(timeDuration), no : String(bellNo) })
 }
 
-const saveButtonPressed = (flg_autoPlay: boolean, timeDuration: number): void => {
-  // router.replace({ pathname: '/bell/bell', params: { flg : flg_autoPlay, time : timeDuration } })
-  router.back()
-  router.setParams({ flg : String(flg_autoPlay), time : String(timeDuration) })
+const bellSelectionPressed = (flg_autoPlay: boolean, timeDuration: number, bellNo: number) => {
+  router.push({ pathname: 'bell/bellSelection', params: { flg : String(flg_autoPlay), time : String(timeDuration), no : String(bellNo) } })
 }
 
 const Setting = (): JSX.Element => {
   const settingParams = useLocalSearchParams()
-  // console.log(settingParams)
+  console.log(settingParams)
 
   const [isEnabled, setIsEnabled] = useState(settingParams.flg === "true")
   const [value, setValue] = useState(Number(settingParams.time))
@@ -25,9 +26,18 @@ const Setting = (): JSX.Element => {
 
   useEffect(()=>{
     navigation.setOptions({
-      headerTitle: 'Setting'
+      headerTitle: 'Setting',
+      headerRight: () =>
+        <TouchableOpacity
+          onPress={() => {
+            checkButtonPressed(isEnabled, value, Number(settingParams.no))
+          }}
+          style={styles.rightButton}
+        >
+          <Feather name="check" size={20} color="white" />
+        </TouchableOpacity>
     })
-  },[])
+  },[isEnabled, value, settingParams])
 
   return (
     <View style={styles.container}>
@@ -61,13 +71,28 @@ const Setting = (): JSX.Element => {
         />
       </View>
 
-      <View style={styles.saveButtonArea}>
+      <TouchableOpacity
+        style={styles.listItem_switch}
+        onPress={() => bellSelectionPressed(settingParams.OnOffFlg === 'true', Number(settingParams.time), Number(settingParams.no))}
+        activeOpacity={1}
+      >
+        <View style={styles.listItem_subText}>
+          <Text style={styles.itemMainText}>ベルの音</Text>
+          <Text style={styles.itemSubText}>数種類のオプションからベルの音を選択</Text>
+        </View>
+        <Image
+          style={styles.bellImage}
+          source={assetsPath.image[Number(settingParams.no)]}
+        />
+      </TouchableOpacity>
+
+      {/* <View style={styles.saveButtonArea}>
         <Button
             title = 'Save'
             color = '#00C0C0'
-            onPress = {() => saveButtonPressed(isEnabled, value)}
+            onPress = {() => saveButtonPressed(isEnabled, value, Number(settingParams.no))}
           />
-      </View>
+      </View> */}
     </View>
   )
 }
@@ -79,7 +104,6 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   listItem_switch: {
-    paddingVertical: 16,
     paddingHorizontal: 24,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -95,7 +119,7 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   listItem_subText: {
-    justifyContent: 'space-between'
+    justifyContent: 'center'
   },
   listItem_textValue: {
     flexDirection: 'row',
@@ -103,11 +127,13 @@ const styles = StyleSheet.create({
     paddingBottom: 16
   },
   itemMainText: {
+    marginTop: 16,
     fontSize: 16,
     lineHeight: 24,
     color: '#000000'
   },
   itemSubText: {
+    marginBottom: 16,
     fontSize: 10,
     lineHeight: 16,
     color: 'rgba(0, 0, 0, 0.4)'
@@ -117,11 +143,18 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: 'rgba(0, 0, 0, 0.4)'
   },
-  saveButtonArea: {
-    marginVertical: 16,
-    paddingVertical: 32,
-    width: '80%',
-    justifyContent: 'center'
+  rightButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 30,
+    height: 30
+  },
+  bellImage: {
+    marginVertical: 8,
+    width: '20%',
+    aspectRatio: 1/1,
+    objectFit: 'contain',
+    opacity: 0.6
   }
 })
 
