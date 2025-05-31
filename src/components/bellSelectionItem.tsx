@@ -8,7 +8,9 @@ import assetsPath from "./assetsPath"
 interface Props {
   No: number,
   OnOffFlg: boolean,
-  onPressFunc: Function
+  onPressFunc: Function,
+  getPlayingStatusFunc: Function,
+  setPlayingStatusFunc: Function
 }
 
 const BellSelectionItem = (props: Props): JSX.Element => {
@@ -16,17 +18,22 @@ const BellSelectionItem = (props: Props): JSX.Element => {
   const windowHeight = Dimensions.get('window').height
   const windowMinLen = Math.min(windowWidth, windowHeight)
   const [isPlaying, setIsPlaying] = useState(false)
-  const { No, OnOffFlg, onPressFunc } = props
+  const { No, OnOffFlg, onPressFunc, getPlayingStatusFunc, setPlayingStatusFunc } = props
 
   const audioSource: AudioSource = assetsPath.audio[No]
   const player = useAudioPlayer(audioSource)
 
   const playSound = async () => {
-    setIsPlaying(true)
-    player.seekTo(0)
-    player.play()
-    await wait(player.duration)
-    setIsPlaying(false)
+    const flg = getPlayingStatusFunc()
+    if (!flg) {
+      setIsPlaying(true)
+      setPlayingStatusFunc(true)
+      player.seekTo(0)
+      player.play()
+      await wait(player.duration)
+      setIsPlaying(false)
+      setPlayingStatusFunc(false)
+    }
   }
 
   const wait = async (second: number) => {

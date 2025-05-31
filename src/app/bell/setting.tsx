@@ -17,7 +17,6 @@ const bellSelectionPressed = (flg_autoPlay: boolean, timeDuration: number, bellN
 
 const Setting = (): JSX.Element => {
   const settingParams = useLocalSearchParams()
-  console.log(settingParams)
 
   const [isEnabled, setIsEnabled] = useState(settingParams.flg === "true")
   const [value, setValue] = useState(Number(settingParams.time))
@@ -86,13 +85,6 @@ const Setting = (): JSX.Element => {
         />
       </TouchableOpacity>
 
-      {/* <View style={styles.saveButtonArea}>
-        <Button
-            title = 'Save'
-            color = '#00C0C0'
-            onPress = {() => saveButtonPressed(isEnabled, value, Number(settingParams.no))}
-          />
-      </View> */}
     </View>
   )
 }

@@ -24,7 +24,7 @@ const Bell = (): JSX.Element => {
   let settingParams = useLocalSearchParams()
 
   if (Object.keys(settingParams).length === 0) {
-    settingParams = { flg : String(false), time : String(5), no : String(0) }
+    settingParams = { flg : String(false), time : String(5), no : String(2) }
   }
 
   const audioSource = assetsPath.audio[Number(settingParams.no)]

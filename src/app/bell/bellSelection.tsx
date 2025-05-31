@@ -15,11 +15,20 @@ const BellSelect = (): JSX.Element => {
 
   const navigation = useNavigation()
   const [selectNo, setSelectNo] = useState(Number(settingParams.no))
+  const [isPlaying, setIsPlaying] = useState(false)
 
   const optionNoList = [...Array(2)].map((_, i) => i)
 
   const selection = (No: number): void => {
     setSelectNo(No)
+  }
+
+  const getPlayingStatus = (): boolean => {
+    return (isPlaying)
+  }
+
+  const setPlayingStatus = (flg: boolean) => {
+    setIsPlaying(flg)
   }
 
   useEffect(()=>{
@@ -28,7 +37,6 @@ const BellSelect = (): JSX.Element => {
       headerRight: () =>
         <TouchableOpacity
           onPress={() => {
-            console.log(selectNo)
             checkButtonPressed(settingParams.OnOffFlg === 'true', Number(settingParams.time), selectNo)
           }}
           style={styles.rightButton}
@@ -47,12 +55,12 @@ const BellSelect = (): JSX.Element => {
             No={i}
             OnOffFlg={selectNo === i}
             onPressFunc={selection}
+            getPlayingStatusFunc={getPlayingStatus}
+            setPlayingStatusFunc={setPlayingStatus}
             key={i}
           ></BellSelectionItem>
         ))}
-
       </View>
-
     </View>
   )
 }
