@@ -73,14 +73,17 @@ const BellSelectionItem = (props: Props): JSX.Element => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
+    // width: '100%',
+    // height: '100%',
+    backgroundColor: '#dddddd'
   },
   bellContainer: {
     width: Math.min(Dimensions.get('window').width,Dimensions.get('window').height)/2,
     height: Math.min(Dimensions.get('window').width,Dimensions.get('window').height)/2,
     position: 'relative',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.4)'
+    borderColor: '#dddddd'
   },
   bellTouchArea: {
     width: '100%',
@@ -98,7 +101,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   bellImage: {
-      width: '90%',
+      width: '80%',
       objectFit: 'contain',
       opacity: 0.5
   },

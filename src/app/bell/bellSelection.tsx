@@ -1,13 +1,12 @@
 import { JSX, useEffect, useState } from "react"
-import { View, StyleSheet, TouchableOpacity } from "react-native"
+import { View, StyleSheet, TouchableOpacity, Dimensions } from "react-native"
 import { router, useLocalSearchParams, useNavigation } from "expo-router"
 import { Feather } from "@expo/vector-icons"
 
 import BellSelectionItem from "../../components/bellSelectionItem"
 
-const checkButtonPressed = (flg_autoPlay: boolean, timeDuration: number, bellNo: number) => {
-  router.back()
-  router.setParams({ flg : String(flg_autoPlay), time : String(timeDuration), no : String(bellNo) })
+const checkButtonPressed = (flg_autoPlay: number, time: number, sens: number, bellNo: number): void => {
+  router.dismissTo({pathname: 'bell/setting', params: { flg : String(flg_autoPlay), time : String(time), sens : String(sens), no : String(bellNo) }})
 }
 
 const BellSelect = (): JSX.Element => {
@@ -17,7 +16,7 @@ const BellSelect = (): JSX.Element => {
   const [selectNo, setSelectNo] = useState(Number(settingParams.no))
   const [isPlaying, setIsPlaying] = useState(false)
 
-  const optionNoList = [...Array(2)].map((_, i) => i)
+  const optionNoList = [...Array(4)].map((_, i) => i)
 
   const selection = (No: number): void => {
     setSelectNo(No)
@@ -37,11 +36,11 @@ const BellSelect = (): JSX.Element => {
       headerRight: () =>
         <TouchableOpacity
           onPress={() => {
-            checkButtonPressed(settingParams.OnOffFlg === 'true', Number(settingParams.time), selectNo)
+            checkButtonPressed(Number(settingParams.flg), Number(settingParams.time), Number(settingParams.sens), selectNo)
           }}
           style={styles.rightButton}
         >
-          <Feather name="check" size={20} color="white" />
+          <Feather name="check" size={24} color="white" />
         </TouchableOpacity>
     })
   },[selectNo])
@@ -69,14 +68,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
-    backgroundColor: '#eeeeee',
-    alignItems: 'center'
+    height: '100%',
+    backgroundColor: '#dddddd',
+    position: 'relative'
   },
   flexWrap : {
     flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    width: '100%'
+    width: '100%',
+    height: '100%'
   },
   rightButton: {
     alignItems: 'center',

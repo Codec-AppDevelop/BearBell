@@ -12,11 +12,12 @@ import assetsPath from "../../components/assetsPath"
 interface Props {
   flg?: string
   time?: string
+  sens?: string
   no?: string
 }
 
 const settingButtonPressed = (settingParams: Props): void => {
-  router.push({ pathname: 'bell/setting', params: { flg : String(settingParams.flg), time : String(settingParams.time) , no : String(settingParams.no)} })
+  router.push({ pathname: 'bell/setting', params: { flg : String(settingParams.flg), time : String(settingParams.time), sens : String(settingParams.sens), no : String(settingParams.no)} })
 }
 
 const Bell = (): JSX.Element => {
@@ -24,7 +25,11 @@ const Bell = (): JSX.Element => {
   let settingParams = useLocalSearchParams()
 
   if (Object.keys(settingParams).length === 0) {
-    settingParams = { flg : String(false), time : String(5), no : String(2) }
+    settingParams = {
+      flg : String(0),
+      time : String(5),
+      sens: String(1),
+      no : String(0) }
   }
 
   const audioSource = assetsPath.audio[Number(settingParams.no)]
@@ -35,10 +40,38 @@ const Bell = (): JSX.Element => {
     player.play()
   }
 
+  const mainTxtFnc = (flgNo: number): string => {
+    if (flgNo > 0) {
+      return ('自動再生 ON')
+    } else {
+      return ('自動再生 OFF')
+    }
+  }
+  const mainTxt = mainTxtFnc(Number(settingParams.flg))
+
+  const subTxtFnc = (flgNo: number, time: number, sens: number): string => {
+    if (flgNo === 1) {
+      return (`${time}s 間隔`)
+    } else if (flgNo === 2) {
+      let retTxt = '振動検知'
+      if (sens === 0) {
+        retTxt = retTxt + ' 感度：低（大きな振動に反応）'
+      } else if (sens === 1) {
+        retTxt = retTxt + ' 感度：中'
+      } else if (sens === 2) {
+        retTxt = retTxt + ' 感度：高（小さい振動にも反応）'
+      }
+      return (retTxt)
+    } else {
+      return ('')
+    }
+  }
+  const subTxt = subTxtFnc(Number(settingParams.flg), Number(settingParams.time), Number(settingParams.sens))
+
   useFocusEffect( useCallback(() => {
 
     const intervalRef = setInterval(() => {
-      if (settingParams.flg === "true") {
+      if (Number(settingParams.flg) === 1) {
         playSound()
       }
     }, Number(settingParams.time)*1000)
@@ -58,7 +91,6 @@ const Bell = (): JSX.Element => {
     return ( () => clearInterval(intervalRef) )
   }, [settingParams]))
 
-
   return (
     <View style={styles.container}>
       <View style={styles.imageArea}>
@@ -70,8 +102,8 @@ const Bell = (): JSX.Element => {
         </TouchableOpacity>
       </View>
       <View style={styles.settingTextArea}>
-        <Text style={styles.settingText_main}>オート再生  {settingParams.flg === "true" ? "ON" : "OFF"}</Text>
-        <Text style={styles.settingText_sub}>再生間隔  {Number(settingParams.time)} sec</Text>
+        <Text style={styles.settingText_main}>{mainTxt}</Text>
+        <Text style={styles.settingText_sub}>{subTxt}</Text>
       </View>
     </View>
   )
@@ -80,16 +112,15 @@ const Bell = (): JSX.Element => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#eeeeee',
+    width: '100%',
+    backgroundColor: '#eeeeee'
   },
   imageArea: {
     height: '60%',
     justifyContent: 'flex-end',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0)'
+    alignItems: 'center'
   },
   touchableArea: {
-    backgroundColor: 'rgba(0, 0, 0, 0)',
     alignItems: 'center'
   },
   bellImage: {

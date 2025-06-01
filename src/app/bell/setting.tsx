@@ -1,27 +1,30 @@
 import { JSX, useEffect, useState } from "react"
-import { View, Text, Switch, Button, Image, TouchableOpacity, StyleSheet } from "react-native"
-import Slider from "@react-native-community/slider"
+import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native"
 import { router, useLocalSearchParams, useNavigation } from "expo-router"
+import { Picker } from '@react-native-picker/picker'
+import Slider from "@react-native-community/slider"
 
 import assetsPath from "../../components/assetsPath"
 import { Feather } from "@expo/vector-icons"
 
-const checkButtonPressed = (flg_autoPlay: boolean, timeDuration: number, bellNo: number): void => {
-  router.back()
-  router.setParams({ flg : String(flg_autoPlay), time : String(timeDuration), no : String(bellNo) })
+const checkButtonPressed = (flg_autoPlay: number, time: number, sens: number, bellNo: number): void => {
+  router.dismissTo({pathname: 'bell/bell', params: { flg : String(flg_autoPlay), time : String(time), sens : String(sens), no : String(bellNo) }})
 }
 
-const bellSelectionPressed = (flg_autoPlay: boolean, timeDuration: number, bellNo: number) => {
-  router.push({ pathname: 'bell/bellSelection', params: { flg : String(flg_autoPlay), time : String(timeDuration), no : String(bellNo) } })
+const bellSelectionPressed = (flg_autoPlay: number, time: number, sens: number, bellNo: number) => {
+  router.push({ pathname: 'bell/bellSelection', params: { flg : String(flg_autoPlay), time : String(time), sens : String(sens), no : String(bellNo) } })
 }
 
 const Setting = (): JSX.Element => {
   const settingParams = useLocalSearchParams()
 
-  const [isEnabled, setIsEnabled] = useState(settingParams.flg === "true")
-  const [value, setValue] = useState(Number(settingParams.time))
-  const toggleSwitch = () => setIsEnabled(previousState => !previousState)
+  const [selectedValue, setselectedValue] = useState(Number(settingParams.flg))
+  const [sliderValue_time, setSliderValue_time] = useState(Number(settingParams.time))
+  const [sliderValue_sens, setSliderValue_sens] = useState(Number(settingParams.sens))
+  // const toggleSwitch = () => setselectedValue(previousState => !previousState)
   const navigation = useNavigation()
+
+  const sliderSensLabel = ['低（大きな振動に反応）', '中', '高（小さい振動にも反応）']
 
   useEffect(()=>{
     navigation.setOptions({
@@ -29,34 +32,38 @@ const Setting = (): JSX.Element => {
       headerRight: () =>
         <TouchableOpacity
           onPress={() => {
-            checkButtonPressed(isEnabled, value, Number(settingParams.no))
+            checkButtonPressed(selectedValue, sliderValue_time, sliderValue_sens, Number(settingParams.no))
           }}
           style={styles.rightButton}
         >
-          <Feather name="check" size={20} color="white" />
+          <Feather name="check" size={24} color="white" />
         </TouchableOpacity>
     })
-  },[isEnabled, value, settingParams])
+  },[selectedValue, sliderValue_time, settingParams])
 
   return (
     <View style={styles.container}>
-      <View style={styles.listItem_switch}>
+      <View style={styles.listItem_picker}>
         <View style={styles.listItem_subText}>
-          <Text style={styles.itemMainText}>オート再生</Text>
-          <Text style={styles.itemSubText}>一定時間ごとの自動再生モード ON/OFF</Text>
+          <Text style={styles.itemMainText}>自動再生設定</Text>
+          <Text style={styles.itemSubText}>自動再生ON/OFFと種類を設定</Text>
         </View>
-        <Switch
-          thumbColor = {isEnabled ? '#00C0C0' : '#aaaaaa'}
-          trackColor = {{true:'#00C0C0'}}
-          onValueChange={toggleSwitch}
-          value={isEnabled}
-        />
+        <Picker
+          onValueChange={(itemValue, itemIndex) => setselectedValue(itemValue)}
+          selectedValue={selectedValue}
+          style={styles.pickerStyle}
+          itemStyle={styles.pikerItem}
+        >
+          <Picker.Item label='自動再生 オフ' value={0} style={styles.pikerItem} />
+          <Picker.Item label='時間間隔 再生' value={1} style={styles.pikerItem} />
+          <Picker.Item label='振動検知 再生' value={2} style={styles.pikerItem} />
+        </Picker>
       </View>
 
-      <View style={styles.listItem_slide}>
+      <View style={ selectedValue === 1 ? styles.listItem_slide : [styles.listItem_slide, {display: 'none'}]}>
         <View style={styles.listItem_textValue}>
           <Text style={styles.itemMainText}>時間間隔</Text>
-          <Text style={styles.itemValue}>{value} s</Text>
+          <Text style={styles.itemValue}>{sliderValue_time} s</Text>
         </View>
         <Slider
           minimumValue = {1}
@@ -65,14 +72,31 @@ const Setting = (): JSX.Element => {
           minimumTrackTintColor = '#00C0C0'
           maximumTrackTintColor = "#000000"
           thumbTintColor = '#00C0C0'
-          value = {value}
-          onValueChange = {setValue}
+          value = {sliderValue_time}
+          onValueChange = {setSliderValue_time}
+        />
+      </View>
+
+      <View style={ selectedValue === 2 ? styles.listItem_slide : [styles.listItem_slide, {display: 'none'}]}>
+        <View style={styles.listItem_textValue}>
+          <Text style={styles.itemMainText}>振動検知感度</Text>
+          <Text style={styles.itemValue}>{sliderSensLabel[sliderValue_sens]}</Text>
+        </View>
+        <Slider
+          minimumValue = {0}
+          maximumValue = {2}
+          step = {1}
+          minimumTrackTintColor = '#00C0C0'
+          maximumTrackTintColor = "#000000"
+          thumbTintColor = '#00C0C0'
+          value = {sliderValue_sens}
+          onValueChange = {setSliderValue_sens}
         />
       </View>
 
       <TouchableOpacity
         style={styles.listItem_switch}
-        onPress={() => bellSelectionPressed(settingParams.OnOffFlg === 'true', Number(settingParams.time), Number(settingParams.no))}
+        onPress={() => bellSelectionPressed(Number(settingParams.flg), Number(settingParams.time), Number(settingParams.sens), Number(settingParams.no))}
         activeOpacity={1}
       >
         <View style={styles.listItem_subText}>
@@ -92,11 +116,24 @@ const Setting = (): JSX.Element => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#dddddd',
+    width: '100%',
     alignItems: 'center'
   },
+  listItem_picker: {
+    backgroundColor: '#eeeeee',
+    paddingLeft: 24,
+    paddingRight: 16,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderColor: 'rgba(0, 0, 0, 0.15)',
+    width: '100%'
+  },
   listItem_switch: {
-    paddingHorizontal: 24,
+    backgroundColor: '#eeeeee',
+    paddingLeft: 24,
+    paddingRight: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderBottomWidth: 1,
@@ -104,7 +141,8 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   listItem_slide: {
-    paddingVertical: 16,
+    backgroundColor: '#eeeeee',
+    paddingBottom: 16,
     paddingHorizontal: 24,
     borderBottomWidth: 1,
     borderColor: 'rgba(0, 0, 0, 0.15)',
@@ -116,13 +154,16 @@ const styles = StyleSheet.create({
   listItem_textValue: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingBottom: 16
+    alignItems: 'center',
+    paddingBottom: 16,
+    width: '100%'
   },
   itemMainText: {
     marginTop: 16,
     fontSize: 16,
     lineHeight: 24,
-    color: '#000000'
+    fontWeight: 'bold',
+    color: '#00C0C0'
   },
   itemSubText: {
     marginBottom: 16,
@@ -131,8 +172,11 @@ const styles = StyleSheet.create({
     color: 'rgba(0, 0, 0, 0.4)'
   },
   itemValue: {
+    marginTop: 16,
     fontSize: 16,
     lineHeight: 24,
+    marginRight: 16,
+    textAlign: 'right',
     color: 'rgba(0, 0, 0, 0.4)'
   },
   rightButton: {
@@ -147,6 +191,13 @@ const styles = StyleSheet.create({
     aspectRatio: 1/1,
     objectFit: 'contain',
     opacity: 0.6
+  },
+  pickerStyle: {
+    width: '50%'
+  },
+  pikerItem: {
+    fontSize: 16,
+    lineHeight: 24
   }
 })
 
