@@ -1,10 +1,11 @@
-import { JSX, useCallback } from "react"
+import { JSX, useCallback, useEffect, useState } from "react"
 import {
   View, Text, StyleSheet,
   Image, TouchableOpacity
 } from "react-native"
 import { router, useNavigation, useLocalSearchParams, useFocusEffect } from "expo-router"
 import { useAudioPlayer } from "expo-audio"
+import { Accelerometer } from "expo-sensors"
 import { Ionicons } from "@expo/vector-icons"
 
 import assetsPath from "../../components/assetsPath"
@@ -23,6 +24,13 @@ const settingButtonPressed = (settingParams: Props): void => {
 const Bell = (): JSX.Element => {
   const navigation = useNavigation()
   let settingParams = useLocalSearchParams()
+
+  const [{ x, y, z }, setAccelData] = useState({ x: 0, y: 0, z: 0 })
+  const [subscription, setSubscription] = useState(null)
+
+  const calcMag = (x: number, y: number, z: number =0): number => {
+    return Math.sqrt(x**2 + y**2 + z**2)
+  }
 
   if (Object.keys(settingParams).length === 0) {
     settingParams = {
@@ -68,6 +76,15 @@ const Bell = (): JSX.Element => {
   }
   const subTxt = subTxtFnc(Number(settingParams.flg), Number(settingParams.time), Number(settingParams.sens))
 
+  const _subscribe = () => {
+    setSubscription(Accelerometer.addListener(setAccelData));
+  }
+
+  const _unsubscribe = () => {
+    subscription?.remove()
+    setSubscription(null)
+  }
+
   useFocusEffect( useCallback(() => {
 
     const intervalRef = setInterval(() => {
@@ -75,6 +92,14 @@ const Bell = (): JSX.Element => {
         playSound()
       }
     }, Number(settingParams.time)*1000)
+
+    if (Number(settingParams.flg) === 2) {
+      if (calcMag(x, y, z) > 3*(3-Number(settingParams.sens)) - 1.5) {
+        if (!player.playing) {
+          playSound()
+        }
+      }
+    }
 
     navigation.setOptions({
       headerRight: () =>
@@ -90,6 +115,12 @@ const Bell = (): JSX.Element => {
 
     return ( () => clearInterval(intervalRef) )
   }, [settingParams]))
+
+  useEffect(() => {
+    _subscribe()
+    Accelerometer.setUpdateInterval(200)
+    return () => _unsubscribe()
+  }, [])
 
   return (
     <View style={styles.container}>
